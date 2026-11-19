@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Quantification CV term request
+    url: https://github.com/HUPO-PSI/PSI-Quant-CV/issues/new
+    about: Requests for new controlled-vocabulary terms go to the PSI-Quant-CV repository.
+  - name: Roadmap
+    url: https://github.com/lmboat/psi_ai_quant_resources/blob/main/ROADMAP.md
+    about: Read the roadmap before opening a plan; it lists the tracks and open decisions.
