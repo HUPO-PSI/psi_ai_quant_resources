@@ -3,7 +3,7 @@
 **Status:** Draft for team review, 2026-11-18
 **Owner:** Lisa Boatner (Chan Zuckerberg Initiative), HUPO-PSI AI Readiness Working Group, PSI-AI Quant Subgroup
 **Audience:** subgroup members and collaborators who will take tasks
-**Companion:** three parent issues in this repository, one per track, hold the task lists. This document is the direction; the issues are the assignments.
+**Companion:** three parent issues in this repository, one per track, hold the task lists: [#4 Document](https://github.com/lmboat/psi_ai_quant_resources/issues/4), [#5 Artifacts](https://github.com/lmboat/psi_ai_quant_resources/issues/5), [#6 Process](https://github.com/lmboat/psi_ai_quant_resources/issues/6). This document is the direction; the issues are the assignments.
 
 ## Why this document
 
@@ -32,18 +32,21 @@ list is what defines our deliverables.
 | Component | What it is | Why it is needed | Where it lives | Status, Nov 2026 |
 |---|---|---|---|---|
 | Specification document | Prose specification: introduction, data model, schema reference, conformance, profiles. Published as a site, exported to DOCX and PDF for submission. | The document PSI reviews and ratifies. | this repository, `docs/` | The schema body exists as MIAPE-AnnData 0.5.0 (`schemas/`). The prose chapters are not started. |
-| Structural schema | LinkML model, with generated JSON Schema and Pydantic classes. | Machine-readable definition. Generates the validator's structured checks and, later, the specification's field tables. | this repository, `schema/` | Not started. |
+| Structural schema and core library | LinkML model with generated JSON Schema and Pydantic classes, packaged as an installable Python library with read, write and record-step helpers over `anndata` and `mudata`. | Machine-readable definition, and the library participants import at the hackathon to produce conformant objects. Generates the validator's structured checks and, later, the specification's field tables. | this repository, `schema/`; package location to be decided | Not started. |
 | Quantification CV release | A tagged OWL release of the Quantification controlled vocabulary. | Gives provenance terms their scientific meaning. The validator pins a release. | `HUPO-PSI/PSI-Quant-CV` | Live in WebProtégé. No release yet. |
 | CV access library | Python package that loads a release, looks up terms, tests ancestry. | The validator's semantic checks and any downstream tool. | to be decided | In progress. |
-| Validator and core library | Library and CLI that read, write and validate artifacts. | The only way to demonstrate conformance. | to be decided | Not started. |
+| Validator | CLI and library that validate artifacts, built on the core library and the CV access library. | The only way to demonstrate conformance. | to be decided | Not started; built at the hackathon. |
 | Converters | Existing producer tools (APB2, msmu, alphapepttools and others) that turn search-engine output into artifacts. Not built by the subgroup. | Produce the instance files and show the specification can be implemented from the text alone. | the producers' repositories, linked from the Implementations page | Exist. Remaining: run their output through the validator and list them on the Implementations page. |
 | Example artifacts | Three instance files from different laboratories and practices, plus one invalid file per validator rule. | The three instance documents PSI asks for. The validator's test corpus. | this repository, `examples/` | Not started. |
 
 The first two rows are the specification itself. The remaining five are what makes it
 testable and ratifiable. "Core library" in PSI usage means the read, write and validate
 package: mzSpecLib calls its Python package the reference implementation, and mzPeak names
-a reference reader and writer plus a conformance validator. The CV access library is a
-dependency of that package, not the package itself.
+a reference reader and writer plus a conformance validator. For a format built on AnnData
+the reader and writer already exist (`anndata`, `mudata`), so our core library is thin:
+the generated models plus read, write and record-step helpers, importable before the
+hackathon, with the validator built on top of it during the hackathon. The CV access
+library is a dependency of that package, not the package itself.
 
 ## Why it matters
 
@@ -96,7 +99,7 @@ flowchart LR
   CV[CV release<br/>PSI-Quant-CV v0.1.0] --> API[CV access library]
   CV --> VAL
   API --> VAL[Validator<br/>core library]
-  LML[LinkML schema<br/>JSON Schema + Pydantic] --> VAL
+  LML[LinkML schema + core library<br/>models, read, write, record-step] --> VAL
   CONV[Existing converters<br/>APB2, msmu, alphapepttools, others] --> EX[Three example artifacts<br/>+ invalid files]
   VAL --> EX
 ```
@@ -131,7 +134,7 @@ PSI process.
 | When | Milestone | Evidence |
 |---|---|---|
 | November 2026 | Plan agreed. Site scaffolded. CV release `v0.1.0` tagged. | Parent issues filed and assigned. `mkdocs build` passes. Tag exists. |
-| Early December 2026 | **Draft 1 freeze:** specification, LinkML schema and CV release pinned together. Editing stops. | Tags on this repository and PSI-Quant-CV. |
+| Early December 2026 | **Draft 1 freeze:** specification, core library (LinkML schema, generated models, read and write helpers) and CV release pinned together. Editing stops. | Tags on this repository and PSI-Quant-CV; the core library installs and round-trips an example. |
 | December 2026 to January 2027 | Validator alpha. Three example artifacts. Existing converters run against the validator. | Validator passes the examples and fails each invalid file. |
 | End of January 2027 | EuBIC-MS hackathon hardens the schema and validator against Draft 1. | Output of at least two existing converters passes the validator. A triaged list of specification gaps. |
 | February to March 2027 | Draft 2 with hackathon feedback. Submission package assembled. | DOCX and PDF, examples, implementation, IP statement, cover letter. |
@@ -190,8 +193,9 @@ PSI process.
 ## Definition of done
 
 **Draft 1, December 2026.** The site builds with all chapters present. The LinkML schema
-generates without error. The CV release is tagged and pinned. The validator checks every
-MUST that can be checked mechanically. At least one example artifact passes.
+generates without error and the core library installs and round-trips an example artifact.
+The CV release is tagged and pinned. Structural and matrix checks of the validator run; the
+semantic checks and the full CLI are hackathon work.
 
 **Submission, 2027.** Editable document plus PDF. Three example artifacts from different
 laboratories. A validator an independent party can run, and the output of at least one
